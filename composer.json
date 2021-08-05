@@ -1,0 +1,23 @@
+{
+    "name": "waljqiang/openwechat",
+    "description": "The sdk for the open platform of the wechat",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "waljqiang",
+            "email": "waljqiang@163.com"
+        }
+    ],
+    "require": {
+    	"php": ">=5.4",
+        "nesbot/carbon": "~1.0",
+        "predis/predis": "~1.0",
+        "monolog/monolog": "~1.11",
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Waljqiang\\OpenWechat\\": "src/"
+        }
+    }
+}
