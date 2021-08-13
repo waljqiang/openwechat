@@ -101,11 +101,15 @@ try{
 	});
 	exit;*/
 	//待公众号实现网页授权
-	//获取网页授权code
-	/*$url = $openWechat->getCode(1,"http://www.xxx.com/wxAuthCallBack","snsapi_base","asdfds");
+	//获取网页授权CODE
+	/*$url = $openWechat->getCODE(1,"http://www.xxx.com/wxAuthCallBack","snsapi_base","asdfds");
 	var_dump($url);
 	//header("Location:".$url);
 	exit;*/
+	//通过CODE获取access_token
+	$res = $openWechat->getAccessTokenByCODE("1","abcD");
+	var_dump($res);
+	exit;
 
 }catch(\Exception $e){
 	var_dump($e);

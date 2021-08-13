@@ -44,6 +44,7 @@ class OpenWechat{
 		"refresh_authorization_token" => "https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token=%s",//刷新authorization_access_token
 		"authorizer_info" => "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=%s",//获取授权账号基本信息
 		"authorization_code" => "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=%s&scope=%s&state=%s&component_appid=%s#wechat_redirect",//请求CODE
+		"access_token_code" => "https://api.weixin.qq.com/sns/oauth2/component/access_token?appid=%s&code=%s&grant_type=%s&component_appid=%s&component_access_token=%s",//通过CODE获取access_token
 	];
 	/**
 	 * ticket过期时间
@@ -369,11 +370,16 @@ class OpenWechat{
      * @param  string $state       [用户附加数据]
      * @return string
      */
-    public function getCode($identify,$redirectUri,$scope="snsapi_base",$state=""){
+    public function getCODE($identify,$redirectUri,$scope="snsapi_base",$state=""){
     	$redirectUri = UrlEncode($redirectUri);
     	$state = !empty($state) ? $state : $identify;
     	$url = sprintf($this->api["authorization_code"],$this->getAuthorizerAppid($identify),$redirectUri,"code",$scope,$state,$this->getAppid());
         return $url;
+    }
+
+    public function getAccessTokenByCODE($identify,$code){
+    	$url = sprintf($this->api["access_token_code"],$this->getAuthorizerAppid($identify),$code,"authorization_code",$this->getAppid(),$this->getComponentToken());
+    	return $this->request($url);
     }
 
     public function getAuthorizerAppid($identify,$authorizer_appid = ""){
