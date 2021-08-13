@@ -45,6 +45,7 @@ class OpenWechat{
 		"authorizer_info" => "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=%s",//获取授权账号基本信息
 		"authorization_code" => "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=%s&scope=%s&state=%s&component_appid=%s#wechat_redirect",//请求CODE
 		"access_token_code" => "https://api.weixin.qq.com/sns/oauth2/component/access_token?appid=%s&code=%s&grant_type=%s&component_appid=%s&component_access_token=%s",//通过CODE获取access_token
+		"refresh_access_token_code" => "https://api.weixin.qq.com/sns/oauth2/component/refresh_token?appid=%s&grant_type=%s&component_appid=%s&component_access_token=%s&refresh_token=%s",//刷新access_token
 	];
 	/**
 	 * ticket过期时间
@@ -359,6 +360,7 @@ class OpenWechat{
        	if($callBack instanceof \Closure){
     		call_user_func($callBack,$decryptMsgArr);
     	}
+    	echo "success";
     }
 
     //获取待公众号网页授权code
@@ -379,6 +381,11 @@ class OpenWechat{
 
     public function getAccessTokenByCODE($identify,$code){
     	$url = sprintf($this->api["access_token_code"],$this->getAuthorizerAppid($identify),$code,"authorization_code",$this->getAppid(),$this->getComponentToken());
+    	return $this->request($url);
+    }
+
+    public function refreshAccessToken($identify,$refreshToken){
+    	$url = sprintf($this->api["refresh_access_token_code"],$this->getAuthorizerAppid($identify),"refresh_token",$refreshToken,$this->getAppid(),$this->getComponentToken());
     	return $this->request($url);
     }
 

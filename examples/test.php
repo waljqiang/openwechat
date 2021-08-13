@@ -107,9 +107,11 @@ try{
 	//header("Location:".$url);
 	exit;*/
 	//通过CODE获取access_token
-	$res = $openWechat->getAccessTokenByCODE("1","abcD");
+	/*$res = $openWechat->getAccessTokenByCODE("1","abcD");
 	var_dump($res);
-	exit;
+	exit;*/
+	//刷新access_token
+	$res = $openWechat->refreshAccessToken("1","sdfsfdsffdfsdsfd");
 
 }catch(\Exception $e){
 	var_dump($e);
