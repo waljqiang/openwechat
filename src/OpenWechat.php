@@ -43,6 +43,7 @@ class OpenWechat{
 		"api_query_auth" => "https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token=%s",//获取授权信息
 		"refresh_authorization_token" => "https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token=%s",//刷新authorization_access_token
 		"authorizer_info" => "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=%s",//获取授权账号基本信息
+		"authorization_code" => "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=%s&scope=%s&state=%s&component_appid=%s#wechat_redirect",//请求CODE
 	];
 	/**
 	 * ticket过期时间
@@ -342,12 +343,37 @@ class OpenWechat{
     }
 
     //授权事件通知处理
+    /**
+     * [authorizationCallBack 授权事件变更通知]
+     * @param  [string] $encryptMsg [微信服务器推送过来的密文消息]
+     * @param  [string] $signature  [微信服务器推送请求中的签名]
+     * @param  [string] $timestamp  [微信服务器推送请求中的时间戳]
+     * @param  [string] $nonce      [微信服务器推送请求中的随机字符]
+     * @param  \Closure $callBack   [用户回调函数,微信服务器推送过来的消息会以数组的形式传递给回调函数，用户在回调函数中实现自己业务逻辑]
+     * @return void
+     */
     public function authorizationCallBack($encryptMsg,$signature,$timestamp,$nonce,$callBack = ""){
         $decryptMsg = $this->decrypt->decryptMsg($signature,$timestamp,$nonce,$encryptMsg);
         $decryptMsgArr = $this->xmlParser->extract($decryptMsg);
        	if($callBack instanceof \Closure){
     		call_user_func($callBack,$decryptMsgArr);
     	}
+    }
+
+    //获取待公众号网页授权code
+    /**
+     * [getCode 获取待公众号实现网页授权CODE码]
+     * @param  [string] $identify    [用户标识,与用户授权appid一一对应]
+     * @param  [string] $redirectUri [授权成功后回调url]
+     * @param  string $scope       [权限]
+     * @param  string $state       [用户附加数据]
+     * @return string
+     */
+    public function getCode($identify,$redirectUri,$scope="snsapi_base",$state=""){
+    	$redirectUri = UrlEncode($redirectUri);
+    	$state = !empty($state) ? $state : $identify;
+    	$url = sprintf($this->api["authorization_code"],$this->getAuthorizerAppid($identify),$redirectUri,"code",$scope,$state,$this->getAppid());
+        return $url;
     }
 
     public function getAuthorizerAppid($identify,$authorizer_appid = ""){
