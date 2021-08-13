@@ -180,14 +180,14 @@ class OpenWechat{
      * @return 
      */
     public function handleTicket($encryptMsg,$signature,$timestamp,$nonce){
-        $fromXml = $this->xmlParser->extract($encryptMsg,["Encrypt"]);
+        $fromXml = $this->xmlParser->extract($encryptMsg);
         $formatXml = $this->xmlParser->generate([
             "ToUserName" => "<![CDATA[toUser]]>",
             "Encrypt" => "<![CDATA[" . $fromXml["Encrypt"] . "]]>"
         ]);
-        $dcryptMsg = $this->decrypt->decryptMsg($signature,$timestamp,$nonce,$formatXml);
-        $dcryptMsgArr = $this->xmlParser->extract($dcryptMsg,["ComponentVerifyTicket"]);
-        $componentVerifyTicket = $dcryptMsgArr["ComponentVerifyTicket"];
+        $decryptMsg = $this->decrypt->decryptMsg($signature,$timestamp,$nonce,$formatXml);
+        $decryptMsgArr = $this->xmlParser->extract($decryptMsg,["ComponentVerifyTicket"]);
+        $componentVerifyTicket = $decryptMsgArr["ComponentVerifyTicket"];
        /* $arr = explode('@@@',$componentVerifyTicket);
         return $arr[1];*/
         $this->redis->setValues(self::VERIFYTICKET . $this->appid,$componentVerifyTicket,$this->ticket_expire_in - self::$pre_expire_in);
@@ -339,6 +339,15 @@ class OpenWechat{
     		]
     	]);
     	return $res;
+    }
+
+    //授权事件通知处理
+    public function authorizationCallBack($encryptMsg,$signature,$timestamp,$nonce,$callBack = ""){
+        $decryptMsg = $this->decrypt->decryptMsg($signature,$timestamp,$nonce,$encryptMsg);
+        $decryptMsgArr = $this->xmlParser->extract($decryptMsg);
+       	if($callBack instanceof \Closure){
+    		call_user_func($callBack,$decryptMsgArr);
+    	}
     }
 
     public function getAuthorizerAppid($identify,$authorizer_appid = ""){

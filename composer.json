@@ -14,7 +14,7 @@
         "predis/predis": "~1.0",
         "monolog/monolog": "~1.11",
         "guzzlehttp/guzzle": "~6.0",
-        "waljqiang/wechat": "^2.4"
+        "waljqiang/wechat": "^3.1"
     },
     "autoload": {
         "psr-4": {
